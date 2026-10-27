@@ -45,7 +45,7 @@ ghostty (${FULL_VERSION}) ${dist}; urgency=medium
 
   * New upstream release ${GHOSTTY_VERSION}.
 
- -- Dario Griffo <dariogriffo@gmail.com>  $(date -R)
+ -- Fengnan Gao <gao.fengnan@gmail.com>  $(date -R)
 EOF
 
     # Build source package (.dsc + .debian.tar.xz); reuses existing .orig.tar.gz

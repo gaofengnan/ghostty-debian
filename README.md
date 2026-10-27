@@ -1,12 +1,12 @@
-![GitHub Downloads (all assets, all releases)](https://img.shields.io/github/downloads/dariogriffo/ghostty-debian/total)
-![GitHub Downloads (all assets, latest release)](https://img.shields.io/github/downloads/dariogriffo/ghostty-debian/latest/total)
-![GitHub Release](https://img.shields.io/github/v/release/dariogriffo/ghostty-debian)
-![GitHub Release Date](https://img.shields.io/github/release-date/dariogriffo/ghostty-debian?display_date=published_at)
+![GitHub Downloads (all assets, all releases)](https://img.shields.io/github/downloads/gaofengnan/ghostty-debian/total)
+![GitHub Downloads (all assets, latest release)](https://img.shields.io/github/downloads/gaofengnan/ghostty-debian/latest/total)
+![GitHub Release](https://img.shields.io/github/v/release/gaofengnan/ghostty-debian)
+![GitHub Release Date](https://img.shields.io/github/release-date/gaofengnan/ghostty-debian?display_date=published_at)
 
 <h1>
    <p align="center">
-     <a href="https://ghostty.org/"><img src="https://github.com/dariogriffo/ghostty-debian/blob/main/ghostty-logo.png" alt="Ghostty Logo" width="128" style="margin-right: 20px"></a>
-     <a href="https://www.debian.org/"><img src="https://github.com/dariogriffo/ghostty-debian/blob/main/debian-logo.png" alt="Debian Logo" width="104" style="margin-left: 20px"></a>
+     <a href="https://ghostty.org/"><img src="https://github.com/gaofengnan/ghostty-debian/blob/main/ghostty-logo.png" alt="Ghostty Logo" width="128" style="margin-right: 20px"></a>
+     <a href="https://www.debian.org/"><img src="https://github.com/gaofengnan/ghostty-debian/blob/main/debian-logo.png" alt="Debian Logo" width="104" style="margin-left: 20px"></a>
      <br>Ghostty for Debian
    </p>
 </h1>
@@ -29,8 +29,10 @@
 
 # Ghostty for Debian and Ubuntu
 
+> Fork of [dariogriffo/ghostty-debian](https://github.com/dariogriffo/ghostty-debian) (MIT); the original packaging is by Dario Griffo. Served at [deb.gaofn.xyz](https://deb.gaofn.xyz) for Debian 13 (trixie) only (Ghostty needs GTK 4.14, newer than bookworm has).
+
 This repository contains build scripts to produce the _unofficial_ Debian and Ubuntu
-packages (.deb) for [Ghostty](https://ghostty.org) hosted at [deb.griffo.io](https://deb.griffo.io)
+packages (.deb) for [Ghostty](https://ghostty.org) hosted at [deb.gaofn.xyz](https://deb.gaofn.xyz)
 
 Currently supported Debian distros are:
 - Trixie (v13)
@@ -62,24 +64,16 @@ Note that Noble is missing a few things newer releases have:
 
 ## Install/Update
 
-📖 **Step-by-step install guide:** [Debian](https://deb.griffo.io/install-latest-ghostty-in-debian.html) · [Ubuntu](https://deb.griffo.io/install-latest-ghostty-in-ubuntu.html)
-
 ### The Debian and Ubuntu way
-
-> ⚠️ **apt access requires a yearly subscription**
-> ([deb.griffo.io](https://deb.griffo.io)). To use this tool for free, download
-> the .deb from the [Releases](https://github.com/dariogriffo/ghostty-debian/releases) page
-> and install it manually (see below).
 
 ```sh
 # 1. Download and store the repository signing key (dearmored)
-sudo curl -fsSL https://deb.griffo.io/EA0F721D231FDD3A0A17B9AC7808B4DD62C41256.asc \
-  | sudo gpg --dearmor -o /usr/share/keyrings/deb.griffo.io.gpg
+sudo curl -fsSL https://deb.gaofn.xyz/EA0F721D231FDD3A0A17B9AC7808B4DD62C41256.asc \
+  | sudo gpg --dearmor -o /usr/share/keyrings/deb.gaofn.xyz.gpg
 
 # 2. Add the repository, referencing the keyring using 'signed-by'
-echo "deb [signed-by=/usr/share/keyrings/deb.griffo.io.gpg] \
-  https://deb.griffo.io/apt $(lsb_release -sc) main" \
-  | sudo tee /etc/apt/sources.list.d/deb.griffo.io.list
+  https://deb.gaofn.xyz/apt $(lsb_release -sc) main" \
+  | sudo tee /etc/apt/sources.list.d/deb.gaofn.xyz.list
 
 # 3. Update and install
 sudo apt update
@@ -103,7 +97,7 @@ The `-tip` packages can be installed alongside the stable `ghostty` package.
 ### Manual Installation
 
 1. Download the .deb package for your Debian or Ubuntu version available on
-   the [Releases](https://github.com/dariogriffo/ghostty-debian/releases) page.
+   the [Releases](https://github.com/gaofengnan/ghostty-debian/releases) page.
 2. Install the downloaded .deb package.
 
 ```sh
@@ -122,8 +116,8 @@ packages.) I'm sure the scripts I have so far can be improved, so please open an
 issue or PR if you notice any problems!
 
 If you want to test locally, you should be able to run
-[build_ghostty_debian.sh](https://github.com/dariogriffo/ghostty-debian/blob/main/build_ghostty_debian.sh)
-or [build_ghostty_ubuntu.sh](https://github.com/dariogriffo/ghostty-debian/blob/main/build_ghostty_ubuntu.sh)
+[build_ghostty_debian.sh](https://github.com/gaofengnan/ghostty-debian/blob/main/build_ghostty_debian.sh)
+or [build_ghostty_ubuntu.sh](https://github.com/gaofengnan/ghostty-debian/blob/main/build_ghostty_ubuntu.sh)
 on your own system, only requirement is docker.
 
 ## Roadmap

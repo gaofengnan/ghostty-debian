@@ -1,7 +1,7 @@
 Source: ghostty
 Section: utils
 Priority: optional
-Maintainer: Dario Griffo <dariogriffo@gmail.com>
+Maintainer: Fengnan Gao <gao.fengnan@gmail.com>
 Homepage: https://ghostty.org/
 Standards-Version: 4.6.2
 Build-Depends: debhelper-compat (= 13),

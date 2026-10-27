@@ -14,19 +14,8 @@ RUN apt-get update && apt-get install -y -o APT::Immediate-Configure=false \
     build-essential debhelper devscripts fakeroot \
     blueprint-compiler pandoc minisign \
     libonig-dev libbz2-dev libgtk4-layer-shell-dev \
-    libgtk-4-dev libadwaita-1-dev libxml2-utils libfontconfig-dev
-
-# Install zig from griffo.io repo. zig-stable is 0.16, which ghostty needs from
-# 1.4.0 on (minimum_zig_version in build.zig.zon), same as the weekly build.
-# The repo requires credentials; they arrive as a BuildKit secret mounted only
-# for this RUN, so they never land in a layer, the image history or a build arg.
-RUN --mount=type=secret,id=apt_auth,target=/etc/apt/auth.conf.d/deb.griffo.io.conf,mode=0600,required=true \
-    curl -sS https://deb.griffo.io/EA0F721D231FDD3A0A17B9AC7808B4DD62C41256.asc \
-    | gpg --dearmor --yes -o /etc/apt/trusted.gpg.d/deb.griffo.io.gpg \
-    && echo "deb https://deb.griffo.io/apt $(lsb_release -sc) main" \
-    | tee /etc/apt/sources.list.d/deb.griffo.io.list \
-    && apt-get update \
-    && apt-get install -y zig-oldstable
+    libgtk-4-dev libadwaita-1-dev libxml2-utils libfontconfig-dev \
+    jq xz-utils
 
 # Clone and checkout
 WORKDIR /build
@@ -34,13 +23,32 @@ RUN git clone https://github.com/ghostty-org/ghostty
 WORKDIR /build/ghostty
 RUN git checkout v$GHOSTTY_VERSION
 
+# Zig: install the version this ghostty release declares (minimum_zig_version), from ziglang.org.
+# Verified two ways: the sha256 published in ziglang.org's index.json, and the minisign signature
+# against Zig's official public key (https://ziglang.org/download/).
+RUN set -eux; \
+    arch=$(uname -m); \
+    ver=$(sed -n 's/.*\.minimum_zig_version *= *"\([^"]*\)".*/\1/p' build.zig.zon); \
+    test -n "$ver"; \
+    curl -fsSL https://ziglang.org/download/index.json -o /tmp/zig-index.json; \
+    url=$(jq -r --arg v "$ver" --arg a "${arch}-linux" '.[$v][$a].tarball' /tmp/zig-index.json); \
+    sha=$(jq -r --arg v "$ver" --arg a "${arch}-linux" '.[$v][$a].shasum' /tmp/zig-index.json); \
+    test "$url" != null; test "$sha" != null; \
+    curl -fsSL -o /tmp/zig.tar.xz "$url"; \
+    curl -fsSL -o /tmp/zig.tar.xz.minisig "$url.minisig"; \
+    echo "$sha  /tmp/zig.tar.xz" | sha256sum -c -; \
+    minisign -Vm /tmp/zig.tar.xz -P RWSGOq2NVecA2UPNdBUZykf1CCb147pkmdtYxgb3Ti+JO/wCYvhbAb/U; \
+    mkdir -p /opt/zig; tar -xJf /tmp/zig.tar.xz -C /opt/zig --strip-components=1; \
+    ln -s /opt/zig/zig /usr/local/bin/zig; zig version; \
+    rm -f /tmp/zig.tar.xz /tmp/zig.tar.xz.minisig /tmp/zig-index.json
+
 # Copy debian packaging
 COPY debian/ debian/
 RUN chmod +x debian/rules
 
 # Generate debian/changelog with proper version and timestamp
-ENV DEBEMAIL="dariogriffo@gmail.com"
-ENV DEBFULLNAME="Dario Griffo"
+ENV DEBEMAIL="gao.fengnan@gmail.com"
+ENV DEBFULLNAME="Fengnan Gao"
 RUN rm -f debian/changelog && \
     dch --create --package ghostty \
     --newversion "${GHOSTTY_VERSION}-${BUILD_VERSION}~${DEBIAN_DIST}" \
