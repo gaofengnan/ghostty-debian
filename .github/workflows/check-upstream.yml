@@ -3,7 +3,7 @@ name: Check for new ghostty release
 on:
   schedule:
     # Hourly, offset to avoid the top-of-hour rush.
-    - cron: "17 * * * *"
+    - cron: "17 6,18 * * *"
   workflow_dispatch: {}
 
 # Only one checker at a time.
