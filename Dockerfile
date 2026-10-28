@@ -12,16 +12,22 @@ ARG BUILD_VERSION
 RUN apt-get update && apt-get install -y -o APT::Immediate-Configure=false \
     git curl wget gpg lsb-release \
     build-essential debhelper devscripts fakeroot \
-    blueprint-compiler pandoc minisign \
+    pandoc minisign \
     libonig-dev libbz2-dev libgtk4-layer-shell-dev \
     libgtk-4-dev libadwaita-1-dev libxml2-utils libfontconfig-dev \
     jq xz-utils
 
-# Clone and checkout
+# Fetch the upstream release tarball and verify its minisign signature. The public key is
+# published in ghostty's PACKAGING.md. The tarball ships pre-generated gresource files, so no
+# blueprint-compiler is needed (trixie has 0.16, a git checkout of 1.4.0 needs >= 0.20).
 WORKDIR /build
-RUN git clone https://github.com/ghostty-org/ghostty
-WORKDIR /build/ghostty
-RUN git checkout v$GHOSTTY_VERSION
+RUN wget -q "https://release.files.ghostty.org/${GHOSTTY_VERSION}/ghostty-${GHOSTTY_VERSION}.tar.gz" \
+    && wget -q "https://release.files.ghostty.org/${GHOSTTY_VERSION}/ghostty-${GHOSTTY_VERSION}.tar.gz.minisig" \
+    && minisign -Vm "ghostty-${GHOSTTY_VERSION}.tar.gz" \
+        -P RWQlAjJC23149WL2sEpT/l0QKy7hMIFhYdQOFy0Z7z7PbneUgvlsnYcV \
+    && tar -xzmf "ghostty-${GHOSTTY_VERSION}.tar.gz" \
+    && rm "ghostty-${GHOSTTY_VERSION}.tar.gz" "ghostty-${GHOSTTY_VERSION}.tar.gz.minisig"
+WORKDIR /build/ghostty-$GHOSTTY_VERSION
 
 # Zig: install the version this ghostty release declares (minimum_zig_version), from ziglang.org.
 # Verified two ways: the sha256 published in ziglang.org's index.json, and the minisign signature
